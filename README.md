@@ -1,1 +1,2 @@
-# Alcohol consumption in GS
+# Methylomics of alcohol consumption
+Scripts accompanying "Methylomics of alcohol consumption" paper.

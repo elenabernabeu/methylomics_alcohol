@@ -249,6 +249,12 @@ write.table(data.frame(basename = rownames(pred_w4_ud), pred_w4_ud), "/Cluster_F
 write.table(data.frame(basename = rownames(pred_w4_ev_filt), pred_w4_ev_filt), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_everyonepredictor_noadjustments_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 write.table(data.frame(basename = rownames(pred_w4_ud_filt), pred_w4_ud_filt), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_usualdrinkerspredictor_noadjustments_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 
+# Re-import
+pred_w4_ev <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_everyonepredictor_noadjustments_scaledmeth.tsv", row.names = 1, header = T)
+pred_w4_ud <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_usualdrinkerspredictor_noadjustments_scaledmeth.tsv", row.names = 1, header = T)
+pred_w4_ev_filt <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_everyonepredictor_noadjustments_scaledmeth_filteredcpgs.tsv", row.names = 1, header = T)
+pred_w4_ud_filt <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_gs_w4_usualdrinkerspredictor_noadjustments_scaledmeth_filteredcpgs.tsv", row.names = 1, header = T)
+
 # Correlation?
 alcohol_all_w4 <- alcohol_all_w4[rownames(pred_w4_ev),]
 alcohol_all_w4$ac_pred_ev <- pred_w4_ev$ac_pred

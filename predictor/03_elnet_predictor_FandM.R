@@ -225,8 +225,8 @@ lbc_target_21[lbc_target_21["sex"] == "M", "ac_pred_opposex"] <- pred_21_F[lbc_t
 write.table(data.frame(basename = rownames(lbc_target_21), lbc_target_21), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_everyonepredictor_sexspecific_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 write.table(data.frame(basename = rownames(lbc_target_36), lbc_target_36), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonepredictor_sexspecific_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 
-lbc_target_21 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_usualdrinkerspredictor_sexspecific_w1w3w4_noadjustments_subset4410_scaledmeth.tsv", header = T, row.names = 1)
-lbc_target_36 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_usualdrinkerspredictor_sexspecific_w1w3w4_noadjustments_subset4410_scaledmeth.tsv", header = T, row.names = 1)
+lbc_target_21 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_everyonepredictor_sexspecific_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
+lbc_target_36 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonepredictor_sexspecific_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
 
 
 ## Test performance

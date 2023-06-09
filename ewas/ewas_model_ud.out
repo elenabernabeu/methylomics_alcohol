@@ -1,0 +1,22 @@
+***********************************************
+* BayesRRcmd                                  *
+* Complex Trait Genetics group UNIL           *
+*                                             *
+* MIT License                                 *
+***********************************************
+
+Analysis started: Fri Jun  9 10:38:41 2023
+
+Options:
+
+--data-file /Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/data/methylation/GS20k_allchrom_usualdrinkers_nogeno_somecovars_onelesssample.csv
+--pheno /Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/data/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample.csvphen
+--analysis-typepreprocess
+--thread 24
+--thread-spawned 24
+--marker-cache
+--seed 1
+
+Input type: CSV
+
+Start preprocessing /Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/data/methylation/GS20k_allchrom_usualdrinkers_nogeno_somecovars_onelesssample.csv

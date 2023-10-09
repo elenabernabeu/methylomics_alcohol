@@ -13,6 +13,7 @@ library("glmnet")
 library(foreign) 
 library("survival")
 library("ggplot2")
+library(broom)
 
 output_dir <- "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/associations/"
 
@@ -286,6 +287,11 @@ survival_21_upw <- coxph(Surv(tte, event) ~ age + factor(sex) + scale(alcunitsup
 survival_36 <- coxph(Surv(tte, event) ~ age + factor(sex) + scale(acpred_en_ud), data=lbc_target_36)
 survival_36_upw <- coxph(Surv(tte, event) ~ age + factor(sex) + scale(alcunitsupw), data=lbc_target_36)
 
+write.table(tidy(survival_21, conf.int = TRUE, exponentiate = TRUE), paste0(output_dir, "survival_assocs_episcore_lbc1921.tsv"), row.names = T, col.names = T, quote = F, sep = "\t")
+write.table(tidy(survival_21_upw, conf.int = TRUE, exponentiate = TRUE), paste0(output_dir, "survival_assocs_measuredalc_lbc1921.tsv"), row.names = T, col.names = T, quote = F, sep = "\t")
+write.table(tidy(survival_36, conf.int = TRUE, exponentiate = TRUE), paste0(output_dir, "survival_assocs_episcore_lbc1936.tsv"), row.names = T, col.names = T, quote = F, sep = "\t")
+write.table(tidy(survival_36_upw, conf.int = TRUE, exponentiate = TRUE), paste0(output_dir, "survival_assocs_measuredalc_lbc1936.tsv"), row.names = T, col.names = T, quote = F, sep = "\t")
+
 
 ## Associations to MRI variables (linear modes, one per variable) - based on Ola's --> Maybe project on wave 2?
 #################################################################################
@@ -361,6 +367,7 @@ write.table(out_cont, paste0(output_dir, "brainmri_assocs_lbc1936.tsv"), sep = "
 
 ## Prep plot
 ####################################################################
+
 out_cont$Outcome = gsub("brain_mm3_w2_sc_t", "Total brain\nvolume", out_cont$Outcome)
 out_cont$Outcome = gsub("wmh_mm3_w2_sc_t", "White matter\nhyperintensity\nvolume", out_cont$Outcome)
 out_cont$Outcome = gsub("gm_mm3_w2_sc_t", "Gray matter\nvolume", out_cont$Outcome)
@@ -394,5 +401,4 @@ stacked = ggplot(out_cont,aes(y=Beta, x=Outcome, group=Predictor, colour=Predict
   coord_flip() + My_Theme
 
 pdf(paste0(output_dir, "forestplot_neuroimaging.pdf"))
-stacked
 dev.off()

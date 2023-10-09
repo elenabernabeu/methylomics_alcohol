@@ -13,32 +13,32 @@ library("doParallel")
 setwd("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/")
 
 ## Thin out betas
-beta_everyone <- fread("beta/allindividuals_10506_logalcohol_residualized_usualdrinkers.csv", sep = ",")
+beta_everyone <- fread("beta/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample.csv", sep = ",")
 beta_everyone <- as.data.frame(beta_everyone)
 beta_everyone <- beta_everyone[4901:nrow(beta_everyone),]
 beta_everyone <- beta_everyone[seq(1, nrow(beta_everyone), 5),]
-fwrite(beta_everyone, "beta/allindividuals_10506_logalcohol_residualized_usualdrinkers_processed.csv", sep = ",", row.names = F, col.names = F)
+fwrite(beta_everyone, "beta/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_processed.csv", sep = ",", row.names = F, col.names = F)
 
 ## Thin out comp
-comp_everyone <- fread("comp/allindividuals_10506_logalcohol_residualized_usualdrinkers.csv", sep = ",")
+comp_everyone <- fread("comp/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample.csv", sep = ",")
 comp_everyone <- as.data.frame(comp_everyone)
 comp_everyone <- comp_everyone[4901:nrow(comp_everyone),]
 comp_everyone <- comp_everyone[seq(1, nrow(comp_everyone), 5),]
-fwrite(comp_everyone, "comp/allindividuals_10506_logalcohol_residualized_usualdrinkers_processed.csv", sep = ",", row.names = F, col.names = F)
+fwrite(comp_everyone, "comp/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_processed.csv", sep = ",", row.names = F, col.names = F)
 
 ## Thin out sigma
-sigma_everyone <- fread("sigma/allindividuals_10506_logalcohol_residualized_usualdrinkers.csv", sep = ",")
+sigma_everyone <- fread("sigma/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample.csv", sep = ",")
 sigma_everyone <- as.data.frame(sigma_everyone)
 sigma_everyone <- sigma_everyone[4901:nrow(sigma_everyone),]
 sigma_everyone <- sigma_everyone[seq(1, nrow(sigma_everyone), 5),]
-fwrite(sigma_everyone, "sigma/allindividuals_10506_logalcohol_residualized_usualdrinkers_processed.csv", sep = ",", row.names = F, col.names = F)
+fwrite(sigma_everyone, "sigma/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_processed.csv", sep = ",", row.names = F, col.names = F)
 
 
 # (2) Calculate AC variance explained by epigenetic probes
 ###################################################################
 
 setwd("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/")
-loop <- list.files("comp/", pattern = "_usualdrinkers_processed.csv")
+loop <- list.files("comp/", pattern = "_usualdrinkers_onelesssample_processed.csv")
 names <- read.csv(paste0("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/data/methylation/GS20k_allchrom_cpg_list.txt"),header=T) # Same for the F and M files so just need this one for all 3 runs
 
 for(file in loop){  

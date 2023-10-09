@@ -35,15 +35,15 @@ def flatten(xss):
 # Import data
 ###########################################################
 
-output_dir = "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/explore/final_everyone_usualdrinkers/"
+output_dir = "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/explore_final/"
 output_dir_ii = "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/gene_enrichment/"
 
-usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/gs20k_alcoholconsumption_usualdrinkers_10485_seed1_onelesssample_meanbeta_pip.tsv", index_col = 1) 
-sigma_usual_file = "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/sigma/gs20k_alcoholconsumption_usualdrinkers_10485_seed1_onelesssample_processed.csv"
+usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_meanbeta_pip.tsv", index_col = 1) 
+sigma_usual_file = "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/sigma/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_processed.csv"
 sigma_usual = pd.read_table(sigma_usual_file, sep = ",", header = None)
 sigma_usual["varexp"] = sigma_usual.iloc[:,1]/(sigma_usual.iloc[:,0]+sigma_usual.iloc[:,1])
-varexplained_usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/gs20k_alcoholconsumption_usualdrinkers_10485_seed1_onelesssample_varianceexplained.tsv", index_col = 0)
-prop_varexplained_usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/gs20k_alcoholconsumption_usualdrinkers_10485_seed1_onelesssample_varianceexplained_periteration.tsv")
+varexplained_usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_varianceexplained.tsv", index_col = 0)
+prop_varexplained_usual = pd.read_table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/bayesr/usual_drinkers/output/summary/allindividuals_10506_logalcohol_residualized_usualdrinkers_onelesssample_varianceexplained_periteration.tsv")
 
 # Fix chromosome column
 usual["chr"] = [int(i.replace("chr", "")) for i in usual["chr"]]
@@ -80,7 +80,7 @@ for df in [sigma_usual_file]:
     col = set_colors(4, palette)
     f = df
     seed_df = pd.read_table(f, sep = ",", header = None)
-    seed_df["prop"] = seed_df[list(seed_df)[0]]/(seed_df[list(seed_df)[0]] + seed_df[list(seed_df)[1]])
+    seed_df["prop"] = seed_df[list(seed_df)[1]]/(seed_df[list(seed_df)[0]] + seed_df[list(seed_df)[1]])
     seed_df["ite"] = range(1,1001)
     axes.plot(seed_df["ite"], seed_df["prop"], linestyle = "solid", c = col[s], zorder = 2, linewidth = 1)
     sns.despine(offset=10, trim=True);
@@ -221,9 +221,10 @@ for df in [sigma_usual_file]:
     plt.close()
     i += 1
     
+
 ## Geweke diagnostics
 i = 0
-fig, axes = plt.subplots(3, 1, figsize = (6, 5))
+fig, axes = plt.subplots(1, 1, figsize = (5, 2))
 col = set_colors(4, palette)
 for df in [sigma_usual_file]:
     print(i)
@@ -233,28 +234,29 @@ for df in [sigma_usual_file]:
     geweke_sigmaE = pm3.geweke(seed_df[0], intervals = 1, first=0.1, last=0.5)
     print(geweke_sigmaG[0][1])
     print(geweke_sigmaE[0][1])
-    axes[i].plot(geweke_sigmaG[0][1], 0, marker = 'o', label = "Chain %s" % seed, color = col[s], zorder = 2)
-    axes[i].plot(geweke_sigmaE[0][1], 1, marker = 'o', label = "Chain %s" % seed, color = col[s], zorder = 2)
-    axes[i].set_xlim([-5, 5])
-    axes[i].set_title(i_dic[i])
-    axes[i].set_yticks([0, 1])
-    axes[i].set_yticklabels(["Sigma G", "Sigma E"])
-    axes[i].set_ylim([-0.1, 1.1])
-    axes[i].axvline(-2, color = 'grey', alpha = 0.7, linestyle = "dashed", linewidth = 1.5, zorder = 1)
-    axes[i].axvline(2, color = 'grey', alpha = 0.7, linestyle = "dashed", linewidth = 1.5, zorder = 1)
+    axes.plot(geweke_sigmaG[0][1], 0, marker = 'o', label = "Chain %s" % seed, color = col[s], zorder = 2)
+    axes.plot(geweke_sigmaE[0][1], 1, marker = 'o', label = "Chain %s" % seed, color = col[s], zorder = 2)
+    axes.set_xlim([-5, 5])
+    axes.set_title("Geweke Z Diagnostic")
+    axes.set_yticks([0, 1])
+    axes.set_yticklabels(["Sigma G", "Sigma E"])
+    axes.set_ylim([-0.1, 1.1])
+    axes.axvline(-2, color = 'grey', alpha = 0.7, linestyle = "dashed", linewidth = 1.5, zorder = 1)
+    axes.axvline(2, color = 'grey', alpha = 0.7, linestyle = "dashed", linewidth = 1.5, zorder = 1)
     i += 1
 
-axes[2].set_xlabel("Z")
-fig.suptitle("Geweke Z Diagnostic")
+axes.set_xlabel("Z")
+#fig.suptitle("Geweke Z Diagnostic")
 plt.tight_layout()
 sns.despine(offset=10, trim=True);
-fig.savefig(output_dir + "convergence_alcoholconsumption_geweke_perparameter.pdf", dpi = 300)
+fig.savefig(output_dir + "convergence_alcoholconsumption_usualdrinkers_geweke_perparameter.pdf", dpi = 300)
 plt.close()
+
 
 ## Effective sample size
 i = 0
-ess_df = pd.DataFrame(index = flatten([list(repeat(i_dic[i], 4)) for i in range(0,3)]), columns = ["Parameter"] + ["Chain %s" % i for i in range(1,2)])
-ess_df["Parameter"] = ["Sigma G", "Sigma E", "Sigma Sum", "Sigma Prop"]*3
+ess_df = pd.DataFrame(index = flatten([list(repeat(i_dic[i], 4)) for i in range(0,1)]), columns = ["Parameter"] + ["Chain %s" % i for i in range(1,2)])
+ess_df["Parameter"] = ["Sigma G", "Sigma E", "Sigma Sum", "Sigma Prop"]
 for df in [sigma_usual_file]:
     print(i)
     for s in range(0,1):
@@ -263,7 +265,7 @@ for df in [sigma_usual_file]:
         f = df
         seed_df = pd.read_table(f, sep = ",", header = None)
         seed_df["sum"] = seed_df[1] + seed_df[0]
-        seed_df["prop"] = seed_df[list(seed_df)[0]]/(seed_df[list(seed_df)[0]] + seed_df[list(seed_df)[1]])
+        seed_df["prop"] = seed_df[list(seed_df)[1]]/(seed_df[list(seed_df)[0]] + seed_df[list(seed_df)[1]])
         ess_G = az.ess(np.array(seed_df[0]))
         ess_E = az.ess(np.array(seed_df[1]))
         ess_sum = az.ess(np.array(seed_df["sum"]))
@@ -274,7 +276,7 @@ for df in [sigma_usual_file]:
         ess_df.loc[(ess_df.index == i_dic[i]) & (ess_df["Parameter"] == "Sigma Prop"), "Chain %s" % seed] = ess_prop
     i += 1
 
-ess_df.to_csv(output_dir + "ess_acrosschains.tsv", sep = "\t", index_label = "Model", na_rep = "NA")
+ess_df.to_csv(output_dir + "ess_acrosschains_usualdrinkers.tsv", sep = "\t", index_label = "Model", na_rep = "NA")
 
 
 # Explore metrics
@@ -296,10 +298,10 @@ plt.close(fig)
 ###########################################################
 
 # From each EWAS
-pip_thresh = 0.8
+pip_thresh = 0.6
 usual_genes = list(set(flatten([i.split(";") for i in usual.loc[(usual["PIP"] > pip_thresh) & (usual["UCSC_RefGene_Name"].notna()), "UCSC_RefGene_Name"]])))
 
 # Export lists
-new_file = open(output_dir_ii + "alcoholconsumption_usual_genes.txt", "w")
+new_file = open(output_dir + "alcoholconsumption_usual_genes_0.6.txt", "w")
 new_file.write("\n".join(usual_genes))
 new_file.close()

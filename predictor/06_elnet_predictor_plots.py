@@ -377,7 +377,7 @@ fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
 
 true_col = "alcohol_units_log"
 pred_col = "ac_pred"
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -391,7 +391,7 @@ sns.despine(offset=10, trim=True);
 
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_all"
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -405,7 +405,7 @@ sns.despine(offset=10, trim=True);
 
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -419,7 +419,7 @@ sns.despine(offset=10, trim=True);
 
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_all_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -455,15 +455,15 @@ df = gs_target_cats
 r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -479,7 +479,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -487,7 +487,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -495,7 +495,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -519,15 +519,15 @@ df = gs_target_cats
 r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -542,7 +542,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -550,7 +550,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -558,7 +558,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -573,20 +573,20 @@ plt.close(fig)
 col = set_colors(3, palette)
 sns.set_palette(sns.color_palette(col))
 true_col = "alcohol_units_log"
-pred_col = "ac_pred"
+pred_col = "ac_pred_filt"
 df = gs_target_cats
 r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -602,7 +602,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -610,7 +610,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -618,7 +618,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -638,15 +638,15 @@ df = gs_target_cats
 r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -662,7 +662,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -670,7 +670,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -678,7 +678,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -699,18 +699,18 @@ pred_all = pd.concat([pred_21, pred_36], axis = 0)
 
 ## Scatterplot for each category (sex agnos, sex opp, same sex), tested in LBC
 df = pred_all
-true_col = "alcunitsupw"
+true_col = "alcunitsupw_log"
 col = set_colors(3, palette)
 sns.set_palette(sns.color_palette(col))
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 sns.despine(offset=10, trim=True);
 plt.legend(frameon = False)
@@ -722,19 +722,19 @@ plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/
 plt.close(fig)
 
 ## Scatterplot for each category (sex agnos, sex opp, same sex), tested in LBC, per cohort
-true_col = "alcunitsupw"
+true_col = "alcunitsupw_log"
 col = set_colors(3, palette)
 sns.set_palette(sns.color_palette(col))
 fig, axes = plt.subplots(1, 2, figsize = (9, 3), sharey = True)
 df = pred_21
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 axes[0].set_title("LBC1921")
 axes[0].legend(frameon = False)
@@ -742,13 +742,13 @@ axes[0].set_ylabel("AC EpiScore")
 axes[0].set_xlabel("Alcohol Consumption")
 df = pred_36
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df[true_col])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 axes[1].set_title("LBC1936")
 axes[1].legend(frameon = False)

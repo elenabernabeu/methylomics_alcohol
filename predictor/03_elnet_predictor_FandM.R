@@ -208,6 +208,12 @@ write.table(data.frame(basename = rownames(pred_21_F), pred_21_F), "/Cluster_Fil
 write.table(data.frame(basename = rownames(pred_36_M), pred_36_M), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 write.table(data.frame(basename = rownames(pred_21_M), pred_21_M), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_everyonemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", sep = "\t", row.names = F, quote = F)
 
+# Import
+pred_36_F <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonefemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
+pred_21_F <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_everyonefemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
+pred_36_M <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
+pred_21_M <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_everyonemalespredictor_w1w3w4_noadjustments_subset6958_scaledmeth_filteredcpgs.tsv", header = T, row.names = 1)
+
 # Add stuff to data frame
 lbc_target_36["ac_pred_sexagnos"] <- pred_36_all["ac_pred"]
 lbc_target_36[lbc_target_36["sex"] == "F", "ac_pred_samesex"] <- pred_36_F[lbc_target_36["sex"] == "F", "ac_pred"]
@@ -232,7 +238,7 @@ lbc_target_36 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_cons
 ## Test performance
 ####################################################################
 
-# Correlation
+# Correlation (non-log)
 r_21_sexagnos <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_sexagnos, use="pairwise.complete.obs") # 0.4123318
 r_21_oppo <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_opposex, use="pairwise.complete.obs") # 0.4161835
 r_21_same <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_samesex, use="pairwise.complete.obs") # 0.4072733
@@ -240,6 +246,15 @@ r_21_same <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_samesex, use="
 r_36_sexagnos <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred_sexagnos, use="pairwise.complete.obs") # 0.4488094
 r_36_oppo <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred_opposex, use="pairwise.complete.obs") # 0.4534403
 r_36_same <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred_samesex, use="pairwise.complete.obs") # 0.4780237
+
+# Correlation (log)
+r_21_sexagnos <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_sexagnos, use="pairwise.complete.obs") # 0.3592785
+r_21_oppo <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_opposex, use="pairwise.complete.obs") # 0.3807617
+r_21_same <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_samesex, use="pairwise.complete.obs") # 0.3721357
+
+r_36_sexagnos <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_sexagnos, use="pairwise.complete.obs") # 0.3889054
+r_36_oppo <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_opposex, use="pairwise.complete.obs") # 0.4097952
+r_36_same <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_samesex, use="pairwise.complete.obs") # 0.4198689
 
 # Incremental DNAm R2
 null_21 <- summary(lm(alcunitsupw ~ age , data=lbc_target_21))$r.squared
@@ -258,6 +273,23 @@ round(100*(full_36_sexagnos - null_36), 3) # 19.246
 round(100*(full_36_oppo - null_36), 3) # 17.988
 round(100*(full_36_same - null_36), 3) # 20.026
 
+# Incremental DNAm R2 (log)
+null_21 <- summary(lm(alcunitsupw_log ~ age , data=lbc_target_21))$r.squared
+full_21_sexagnos <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_sexagnos, data=lbc_target_21))$r.squared
+full_21_oppo <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_opposex, data=lbc_target_21))$r.squared
+full_21_same <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_samesex, data=lbc_target_21))$r.squared
+round(100*(full_21_sexagnos - null_21), 3) # 20.624
+round(100*(full_21_oppo - null_21), 3) # 21.174
+round(100*(full_21_same - null_21), 3) # 21.012
+
+null_36 <- summary(lm(alcunitsupw_log ~ age + sex, data=lbc_target_36))$r.squared
+full_36_sexagnos <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_sexagnos, data=lbc_target_36))$r.squared
+full_36_oppo <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_opposex, data=lbc_target_36))$r.squared
+full_36_same <- summary(lm(alcunitsupw_log ~ age + sex + ac_pred_samesex, data=lbc_target_36))$r.squared
+round(100*(full_36_sexagnos - null_36), 3) # 14.441
+round(100*(full_36_oppo - null_36), 3) # 14.521
+round(100*(full_36_same - null_36), 3) # 15.123
+
 # P-vals
 summary(lm(alcunitsupw ~ age + sex, data=lbc_target_21)) 
 summary(lm(alcunitsupw ~ age + sex + ac_pred_sexagnos, data=lbc_target_21)) 
@@ -268,3 +300,14 @@ summary(lm(alcunitsupw ~ age + sex, data=lbc_target_36))
 summary(lm(alcunitsupw ~ age + sex + ac_pred_sexagnos, data=lbc_target_36)) 
 summary(lm(alcunitsupw ~ age + sex + ac_pred_opposex, data=lbc_target_36)) 
 summary(lm(alcunitsupw ~ age + sex + ac_pred_samesex, data=lbc_target_36)) 
+
+# P-vals (log)
+summary(lm(alcunitsupw_log ~ age + sex, data=lbc_target_21)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_sexagnos, data=lbc_target_21)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_opposex, data=lbc_target_21)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_samesex, data=lbc_target_21)) 
+
+summary(lm(alcunitsupw_log ~ age + sex, data=lbc_target_36)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_sexagnos, data=lbc_target_36)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_opposex, data=lbc_target_36)) 
+summary(lm(alcunitsupw_log ~ age + sex + ac_pred_samesex, data=lbc_target_36)) 

@@ -27,6 +27,7 @@ from plot_funcs import *
 from scipy.stats import gaussian_kde
 import scipy.stats
 from sklearn import metrics
+from sklearn import calibration
 
 
 # Color palette
@@ -119,7 +120,7 @@ fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
 # Elnet usual
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ud"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -134,7 +135,7 @@ sns.despine(offset=10, trim=True);
 # Elnet everyone
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ev"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -149,7 +150,7 @@ sns.despine(offset=10, trim=True);
 # Elnet usual - Filtered CpGs
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ud_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -164,7 +165,7 @@ sns.despine(offset=10, trim=True);
 # Elnet everyone - Filtered CpGs
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ev_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -181,15 +182,15 @@ plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/
 plt.close(fig)
 
 
-## Scatterplot: Usual drinkers + everyone drinker (elnet + bayesR, LBC21)
+## Scatterplot: Usual drinkers + everyone drinker (elnet + filtering, all cohorts) in LBC (NON LOG)
 ##############################################################################
 
-df = lbc_target_21
 fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
 
-true_col = "alcunitsupw_log"
+# Elnet usual
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ud"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"]) # (0.4230203658674733, 2.348358481612314e-20)
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -198,10 +199,11 @@ axes[0,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap
 axes[0,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
 axes[0,0].set_ylabel("AC EpiScore")
 #axes[0].set_xlabel("Alcohol Consumption")
-axes[0,0].set_title("Usual Drinkers\n(r = %s)" % round(r[0],2))
+axes[0,0].set_title("Usual Drinkers \n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+# Elnet everyone
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ev"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
@@ -215,7 +217,8 @@ axes[0,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
 axes[0,1].set_title("Everyone\n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+# Elnet usual - Filtered CpGs
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ud_filt"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
@@ -229,9 +232,77 @@ axes[1,0].set_xlabel("Alcohol Consumption")
 axes[1,0].set_title("Usual Drinkers | Filtered CpGs\n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+# Elnet everyone - Filtered CpGs
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ev_filt"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[1,1].set_ylabel("AC EpiScore")
+axes[1,1].set_xlabel("Alcohol Consumption")
+axes[1,1].set_title("Everyone | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_nonlog.pdf", dpi = 300)
+plt.close(fig)
+
+
+## Scatterplot: Usual drinkers + everyone drinker (elnet, LBC21)
+##############################################################################
+
+df = lbc_target_21
+fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ud"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"]) # (0.4230203658674733, 2.348358481612314e-20)
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[0,0].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,0].set_title("Usual Drinkers\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ev"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[0,1].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,1].set_title("Everyone\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ud_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[1,0].set_ylabel("AC EpiScore")
+axes[1,0].set_xlabel("Alcohol Consumption")
+axes[1,0].set_title("Usual Drinkers | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ev_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -248,13 +319,13 @@ plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/
 plt.close(fig)
 
 
-## Scatterplot: Usual drinkers + everyone drinker (elnet + bayesR, LBC36)
+## Scatterplot: Usual drinkers + everyone drinker (elnet, LBC21) NON LOG
 ##############################################################################
 
-df = lbc_target_36
+df = lbc_target_21
 fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
 
-true_col = "alcunitsupw_log"
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ud"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"]) # (0.4230203658674733, 2.348358481612314e-20)
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
@@ -268,7 +339,7 @@ axes[0,0].set_ylabel("AC EpiScore")
 axes[0,0].set_title("Usual Drinkers\n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ev"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
@@ -282,7 +353,7 @@ axes[0,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
 axes[0,1].set_title("Everyone\n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ud_filt"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
@@ -296,9 +367,76 @@ axes[1,0].set_xlabel("Alcohol Consumption")
 axes[1,0].set_title("Usual Drinkers | Filtered CpGs\n(r = %s)" % round(r[0],2))
 sns.despine(offset=10, trim=True);
 
-true_col = "alcunitsupw_log"
+true_col = "alcunitsupw"
 pred_col = "acpred_en_ev_filt"
 r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[1,1].set_ylabel("AC EpiScore")
+axes[1,1].set_xlabel("Alcohol Consumption")
+axes[1,1].set_title("Everyone | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_1921_nonlog.pdf", dpi = 300)
+plt.close(fig)
+
+
+## Scatterplot: Usual drinkers + everyone drinker (elnet + bayesR, LBC36)
+##############################################################################
+
+df = lbc_target_36
+fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ud"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"]) # (0.4230203658674733, 2.348358481612314e-20)
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[0,0].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,0].set_title("Usual Drinkers\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ev"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[0,1].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,1].set_title("Everyone\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ud_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[1,0].set_ylabel("AC EpiScore")
+axes[1,0].set_xlabel("Alcohol Consumption")
+axes[1,0].set_title("Usual Drinkers | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw_log"
+pred_col = "acpred_en_ev_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -315,6 +453,73 @@ plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/
 plt.close(fig)
 
 
+## Scatterplot: Usual drinkers + everyone drinker (elnet + bayesR, LBC36) - NONLOG
+##############################################################################
+
+df = lbc_target_36
+fig, axes = plt.subplots(2, 2, figsize = (8, 6), sharex = True, sharey = True)
+
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ud"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"]) # (0.4230203658674733, 2.348358481612314e-20)
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[0,0].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,0].set_title("Usual Drinkers\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ev"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[0,1].set_ylabel("AC EpiScore")
+#axes[0].set_xlabel("Alcohol Consumption")
+axes[0,1].set_title("Everyone\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ud_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[1,0].set_ylabel("AC EpiScore")
+axes[1,0].set_xlabel("Alcohol Consumption")
+axes[1,0].set_title("Usual Drinkers | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ev_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1,1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1,1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[1,1].set_ylabel("AC EpiScore")
+axes[1,1].set_xlabel("Alcohol Consumption")
+axes[1,1].set_title("Everyone | Filtered CpGs\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_1936_nonlog.pdf", dpi = 300)
+plt.close(fig)
+
+
 ## Scatterplot: Final model
 ##############################################################################
 
@@ -323,7 +528,7 @@ fig, axes = plt.subplots(1, 2, figsize = (9, 3), sharex = True, sharey = True)
 df = lbc_target_21
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ev_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"]) # (0.4230203658674733, 2.348358481612314e-20)
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"]) # (0.4230203658674733, 2.348358481612314e-20)
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -338,7 +543,7 @@ sns.despine(offset=10, trim=True);
 df = lbc_target_36
 true_col = "alcunitsupw_log"
 pred_col = "acpred_en_ev_filt"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 m, b = np.polyfit(df[true_col], df[pred_col], 1)
 cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
 xy = np.vstack([df[true_col], df[pred_col]])
@@ -353,6 +558,47 @@ sns.despine(offset=10, trim=True);
 plt.tight_layout()
 plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_finalmodel.pdf", dpi = 300)
 plt.close(fig)
+
+
+## Scatterplot: Final model (NONLOG)
+##############################################################################
+
+fig, axes = plt.subplots(1, 2, figsize = (9, 3), sharex = True, sharey = True)
+
+df = lbc_target_21
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ev_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"]) # (0.4230203658674733, 2.348358481612314e-20)
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[0].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[0].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+axes[0].set_ylabel("AC EpiScore")
+axes[0].set_xlabel("Alcohol Consumption")
+axes[0].set_title("LBC 1921 \n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+df = lbc_target_36
+true_col = "alcunitsupw"
+pred_col = "acpred_en_ev_filt"
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+m, b = np.polyfit(df[true_col], df[pred_col], 1)
+cmap = mc.LinearSegmentedColormap.from_list("", ["#0084AD", "#47C3F4", "#FF9429", "#FFE3CC"])
+xy = np.vstack([df[true_col], df[pred_col]])
+z = gaussian_kde(xy)(xy)
+axes[1].scatter(y = df[pred_col], x = df[true_col], c = z, s = 15, cmap = cmap)
+axes[1].plot(df[true_col], m*df[true_col]+b, color = "black", lw = 1)
+#axes[0,1].set_ylabel("AC EpiScore")
+axes[1].set_xlabel("Alcohol Consumption")
+axes[1].set_title("LBC 1936\n(r = %s)" % round(r[0],2))
+sns.despine(offset=10, trim=True);
+
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_finalmodel_nonlog.pdf", dpi = 300)
+plt.close(fig)
+
 
 
 #### GS WAVE 4 - EVERYONE vs USUAL, FILTERED vs NON-FILTERED
@@ -452,18 +698,18 @@ sns.set_palette(sns.color_palette(col))
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_all_filt"
 df = gs_target_cats
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -479,7 +725,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -487,7 +733,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -495,7 +741,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -516,18 +762,18 @@ sns.set_palette(sns.color_palette(col))
 true_col = "alcohol_units_log"
 pred_col = "ac_pred"
 df = gs_target_cats
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -542,7 +788,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -550,7 +796,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -558,7 +804,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -575,18 +821,18 @@ sns.set_palette(sns.color_palette(col))
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_filt"
 df = gs_target_cats
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -602,7 +848,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -610,7 +856,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -618,7 +864,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -635,18 +881,18 @@ sns.set_palette(sns.color_palette(col))
 true_col = "alcohol_units_log"
 pred_col = "ac_pred_all"
 df = gs_target_cats
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"]) 
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"]) 
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Usual (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[0], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "More (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[1], 1.3), levels = 4)
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Less (r = %s)" % round(r[0], 3))
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes, color = lighten_color(col[2], 1.3), levels = 4)
 sns.despine(offset=10, trim=True);
@@ -662,7 +908,7 @@ plt.close(fig)
 fig, axes = plt.subplots(1, 3, figsize = (9, 3), sharey = True)
 # Usual
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 2,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = lighten_color(col[0], 1.3))
 axes[0].set_ylabel("AC EpiScore")
@@ -670,7 +916,7 @@ axes[0].set_xlabel("Alcohol Consumption")
 axes[0].set_title("Usual drinking\nN = %s | r = %s" % (len(df.index), round(r[0],3)))
 # More
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 1,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = lighten_color(col[1], 1.3))
 axes[1].set_xlabel("Alcohol Consumption")
@@ -678,7 +924,7 @@ axes[1].set_title("Drank more than normal\nN = %s | r = %s" % (len(df.index), ro
 axes[1].set_ylabel(None)
 # Less
 df = gs_target_cats.loc[gs_target_cats["alcohol_usual"] == 3,]
-r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcohol_units_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.3, 'linewidth':0, 'edgecolor':None})
 sns.kdeplot(y = pred_col, x = true_col, data = df, ax = axes[2], color = lighten_color(col[2], 1.3))
 axes[2].set_xlabel("Alcohol Consumption")
@@ -704,13 +950,13 @@ col = set_colors(3, palette)
 sns.set_palette(sns.color_palette(col))
 fig, axes = plt.subplots(1, 1, figsize = (8, 4))
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes, color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 sns.despine(offset=10, trim=True);
 plt.legend(frameon = False)
@@ -728,13 +974,13 @@ sns.set_palette(sns.color_palette(col))
 fig, axes = plt.subplots(1, 2, figsize = (9, 3), sharey = True)
 df = pred_21
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[0], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 axes[0].set_title("LBC1921")
 axes[0].legend(frameon = False)
@@ -742,13 +988,13 @@ axes[0].set_ylabel("AC EpiScore")
 axes[0].set_xlabel("Alcohol Consumption")
 df = pred_36
 pred_col = "ac_pred_sexagnos"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[0], line_kws={"color": lighten_color(col[0], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Sex-agnostic (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_samesex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[1], line_kws={"color": lighten_color(col[1], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Same (r = %s)" % round(r[0], 3))
 pred_col = "ac_pred_opposex"
-r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw"])
+r = scipy.stats.pearsonr(df[pred_col], df["alcunitsupw_log"])
 sns.regplot(y = pred_col, x = true_col, data = df, ax = axes[1], color = col[2], line_kws={"color": lighten_color(col[2], 1.3)}, scatter_kws={'alpha':0.5, 'linewidth':0, 'edgecolor':None, 'rasterized':True}, label = "Opposite (r = %s)" % round(r[0], 3))
 axes[1].set_title("LBC1936")
 axes[1].legend(frameon = False)
@@ -791,8 +1037,6 @@ fig, axes = plt.subplots(1, 1, figsize = (4, 4))
 axes.plot(fpr_21, tpr_21, col[0], label = 'LBC1921 AUC = %0.2f' % roc_auc_21)
 axes.plot(fpr_36, tpr_36, col[1], label = 'LBC1936 AUC = %0.2f' % roc_auc_36)
 sns.despine(offset=10, trim=True);
-axes.set_ylabel('True Positive Rate')
-axes.set_xlabel('False Positive Rate')
 axes.legend(loc = 'lower right', frameon = False)
 axes.set_xlim([0, 1.05])
 axes.set_ylim([0, 1.05])
@@ -801,6 +1045,47 @@ axes.set_xlabel('False Positive Rate')
 axes.set_title("Heavy Drinker Classification")
 plt.tight_layout()
 plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc.pdf", dpi = 300)
+plt.close(fig)
+
+
+# Precision recall curves
+pr_21, re_21, _ = metrics.precision_recall_curve(lbc_target_21["alcohol_cat_bi"], lbc_predictions_21["ac_pred"])
+pr_auc_21 = metrics.auc(sorted(pr_21), sorted(re_21)) # 0.837784031006678
+pr_36, re_36, _ = metrics.precision_recall_curve(lbc_target_36["alcohol_cat_bi"], lbc_predictions_36["ac_pred"])
+pr_auc_36 = metrics.auc(sorted(pr_36), sorted(re_36)) # 0.7476010093725868
+
+col = set_colors(3, palette)
+fig, axes = plt.subplots(1, 1, figsize = (4, 4))
+axes.plot(re_21, pr_21, col[0], label = 'LBC1921 AUC = %0.2f' % pr_auc_21)
+axes.plot(re_36, pr_36, col[1], label = 'LBC1936 AUC = %0.2f' % pr_auc_36)
+sns.despine(offset=10, trim=True);
+axes.set_xlabel('Recall')
+axes.set_ylabel('Precision')
+axes.legend(loc = 'lower right', frameon = False)
+axes.set_xlim([-0.05, 1.05])
+axes.set_ylim([-0.05, 1.05])
+axes.set_title("Heavy Drinker Classification")
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall.pdf", dpi = 300)
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall.eps", dpi = 300)
+plt.close(fig)
+
+# Calibration curves
+cal_y_21, cal_x_21 = calibration.calibration_curve(lbc_target_21["alcohol_cat_bi"], lbc_predictions_21["ac_pred"], normalize = True, n_bins = 50)
+cal_y_36, cal_x_36 = calibration.calibration_curve(lbc_target_36["alcohol_cat_bi"], lbc_predictions_36["ac_pred"], normalize = True, n_bins = 50)
+
+col = set_colors(3, palette)
+fig, axes = plt.subplots(1, 1, figsize = (4, 4))
+axes.plot(cal_x_21, cal_y_21, col[0], label = 'LBC1921')
+axes.plot(cal_x_36, cal_y_36, col[1], label = 'LBC1936')
+sns.despine(offset=10, trim=True);
+axes.set_xlabel('Predicted Probability')
+axes.set_ylabel('True Probability')
+axes.legend(loc = 'lower right', frameon = False)
+axes.set_title("Heavy Drinker Classification")
+plt.tight_layout()
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_calibration.pdf", dpi = 300)
+plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_calibration.eps", dpi = 300)
 plt.close(fig)
 
 

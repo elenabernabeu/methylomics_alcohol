@@ -21,6 +21,7 @@ m2beta <- function(m) {
 
 meanimpute <- function(x) ifelse(is.na(x),mean(x,na.rm=T),x)
 
+
 ## Test in LBC
 ####################################################################
 
@@ -151,6 +152,10 @@ write.table(data.frame(basename = rownames(pred_21_all_filt), pred_21_all_filt),
 write.table(data.frame(basename = rownames(pred_36_dan), pred_36_dan), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_danielpredictor_noadjustments_scaledmeth.tsv", sep = "\t", row.names = F, quote = F)
 write.table(data.frame(basename = rownames(pred_21_dan), pred_21_dan), "/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_danielpredictor_noadjustments_scaledmeth.tsv", sep = "\t", row.names = F, quote = F)
 
+
+## Import
+####################################################################
+
 pred_36 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_usualdrinkerspredictor_w1w3w4_noadjustments_scaledmeth.tsv", header = T, row.names = 1)
 pred_21 <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_usualdrinkerspredictor_w1w3w4_noadjustments_scaledmeth.tsv", header = T, row.names = 1)
 pred_36_all <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_everyonepredictor_w1w3w4_noadjustments_scaledmeth.tsv", header = T, row.names = 1)
@@ -162,7 +167,6 @@ pred_21_all_filt <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_c
 pred_36_dan <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1936_danielpredictor_noadjustments.tsv", header = T, row.names = 1)
 pred_21_dan <- read.table("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/predictions_lbc_1921_danielpredictor_noadjustments.tsv", header = T, row.names = 1)
 
-# Correlation?
 lbc_target_36 <- lbc_target_36[rownames(pred_36),]
 lbc_target_36$ac_pred <- pred_36$ac_pred
 lbc_target_36$ac_pred_all <- pred_36_all$ac_pred
@@ -177,6 +181,11 @@ lbc_target_21$ac_pred_filt <- pred_21_filt$ac_pred
 lbc_target_21$ac_pred_all_filt <- pred_21_all_filt$ac_pred
 lbc_target_21$ac_pred_dan <- pred_21_dan$ac_pred
 
+
+## Correlation
+####################################################################
+
+# Non-log
 r_36 <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred, use="pairwise.complete.obs") # 0.4444912
 r_36_all <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred_all, use="pairwise.complete.obs") # 0.405975
 r_36_filt <- cor(lbc_target_36$alcunitsupw, lbc_target_36$ac_pred_filt, use="pairwise.complete.obs") # 0.4638506 (0.4446818 Carreras)
@@ -189,6 +198,22 @@ r_21_filt <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_filt, use="pai
 r_21_all_filt <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_all_filt, use="pairwise.complete.obs") # 0.4496676 (0.4422971 Carreras)
 r_21_dan <- cor(lbc_target_21$alcunitsupw, lbc_target_21$ac_pred_dan, use="pairwise.complete.obs") # 0.2830282
 
+# Log
+r_36 <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred, use="pairwise.complete.obs") # 0.3854889
+r_36_all <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_all, use="pairwise.complete.obs") # 0.3480113
+r_36_filt <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_filt, use="pairwise.complete.obs") # 0.4040634
+r_36_all_filt <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_all_filt, use="pairwise.complete.obs") # 0.4151113
+r_36_dan <- cor(lbc_target_36$alcunitsupw_log, lbc_target_36$ac_pred_dan, use="pairwise.complete.obs") # 0.3353729
+
+r_21 <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred, use="pairwise.complete.obs") # 0.3930249
+r_21_all <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_all, use="pairwise.complete.obs") # 0.3552321
+r_21_filt <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_filt, use="pairwise.complete.obs") # 0.4212163
+r_21_all_filt <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_all_filt, use="pairwise.complete.obs") # 0.4089689
+r_21_dan <- cor(lbc_target_21$alcunitsupw_log, lbc_target_21$ac_pred_dan, use="pairwise.complete.obs") # 0.2591051
+
+
+## R2
+####################################################################
 
 # Incremental R2?
 null_36 <- summary(lm(alcunitsupw ~ age + as.factor(sex), data=lbc_target_36))$r.squared
@@ -240,4 +265,55 @@ null_21_dan <- summary(lm(alcunitsupw ~ age + as.factor(sex), data=lbc_target_21
 full_21_dan <- summary(lm(alcunitsupw ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_21))$r.squared
 round(100*(full_21_dan - null_21_dan), 3) # 7.544
 summary(lm(alcunitsupw ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_21)) # p-value: 2.952e-15
+
+# Incremental R2 (Log)?
+null_36 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
+full_36 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_36))$r.squared
+round(100*(full_36 - null_36), 3) # 14.677
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_36)) # p-value: < 2.2e-16
+
+null_36_all <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
+full_36_all <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all, data=lbc_target_36))$r.squared
+round(100*(full_36_all - null_36_all), 3) # 12.058
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all, data=lbc_target_36)) # p-value: < 2.2e-16
+
+null_36_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
+full_36_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_filt, data=lbc_target_36))$r.squared
+round(100*(full_36_filt - null_36_filt), 3) # 15.856
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_filt, data=lbc_target_36)) # p-value: < 2.2e-16
+
+null_36_all_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
+full_36_all_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all_filt, data=lbc_target_36))$r.squared
+round(100*(full_36_all_filt - null_36_all_filt), 3) # 16.636
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all_filt, data=lbc_target_36)) # p-value: < 2.2e-16
+
+null_36_dan <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
+full_36_dan <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_36))$r.squared
+round(100*(full_36_dan - null_36_dan), 3) # 10.641
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_36)) # p-value: < 2.2e-16
+
+null_21 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_21))$r.squared
+full_21 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_21))$r.squared
+round(100*(full_21 - null_21), 3) # 16.031
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_21)) # p-value: < 2.2e-16
+
+null_21_all <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_21))$r.squared
+full_21_all <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all, data=lbc_target_21))$r.squared
+round(100*(full_21_all - null_21_all), 3) # 12.49
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all, data=lbc_target_21)) # p-value: < 2.2e-16
+
+null_21_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_21))$r.squared
+full_21_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_filt, data=lbc_target_21))$r.squared
+round(100*(full_21_filt - null_21_filt), 3) # 19.024
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_21)) # p-value: < 2.2e-16
+
+null_21_all_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_21))$r.squared
+full_21_all_filt <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all_filt, data=lbc_target_21))$r.squared
+round(100*(full_21_all_filt - null_21_all_filt), 3) # 17.872
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_all_filt, data=lbc_target_21)) # p-value: < 2.2e-16
+
+null_21_dan <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_21))$r.squared
+full_21_dan <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_21))$r.squared
+round(100*(full_21_dan - null_21_dan), 3) # 6.31
+summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_21)) # p-value: 2.952e-15
 

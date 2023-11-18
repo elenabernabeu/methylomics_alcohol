@@ -11,6 +11,8 @@ library("foreach")
 library("doParallel")
 library("glmnet")
 library("pROC")
+library("PRROC")
+library("precrec")
 
 m2beta <- function(m) { 
   beta <- 2^m/(2^m + 1)

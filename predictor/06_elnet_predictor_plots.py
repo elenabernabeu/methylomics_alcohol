@@ -1047,12 +1047,11 @@ plt.tight_layout()
 plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc.pdf", dpi = 300)
 plt.close(fig)
 
-
 # Precision recall curves
 pr_21, re_21, _ = metrics.precision_recall_curve(lbc_target_21["alcohol_cat_bi"], lbc_predictions_21["ac_pred"])
-pr_auc_21 = metrics.auc(sorted(pr_21), sorted(re_21)) # 0.837784031006678
+pr_auc_21 = metrics.auc(re_21, pr_21) # 0.43856277273601374
 pr_36, re_36, _ = metrics.precision_recall_curve(lbc_target_36["alcohol_cat_bi"], lbc_predictions_36["ac_pred"])
-pr_auc_36 = metrics.auc(sorted(pr_36), sorted(re_36)) # 0.7476010093725868
+pr_auc_36 = metrics.auc(re_36, pr_36) # 0.47438731995504485
 
 col = set_colors(3, palette)
 fig, axes = plt.subplots(1, 1, figsize = (4, 4))
@@ -1068,24 +1067,6 @@ axes.set_title("Heavy Drinker Classification")
 plt.tight_layout()
 plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall.pdf", dpi = 300)
 plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall.eps", dpi = 300)
-plt.close(fig)
-
-# Calibration curves
-cal_y_21, cal_x_21 = calibration.calibration_curve(lbc_target_21["alcohol_cat_bi"], lbc_predictions_21["ac_pred"], normalize = True, n_bins = 50)
-cal_y_36, cal_x_36 = calibration.calibration_curve(lbc_target_36["alcohol_cat_bi"], lbc_predictions_36["ac_pred"], normalize = True, n_bins = 50)
-
-col = set_colors(3, palette)
-fig, axes = plt.subplots(1, 1, figsize = (4, 4))
-axes.plot(cal_x_21, cal_y_21, col[0], label = 'LBC1921')
-axes.plot(cal_x_36, cal_y_36, col[1], label = 'LBC1936')
-sns.despine(offset=10, trim=True);
-axes.set_xlabel('Predicted Probability')
-axes.set_ylabel('True Probability')
-axes.legend(loc = 'lower right', frameon = False)
-axes.set_title("Heavy Drinker Classification")
-plt.tight_layout()
-plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_calibration.pdf", dpi = 300)
-plt.savefig("/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_calibration.eps", dpi = 300)
 plt.close(fig)
 
 

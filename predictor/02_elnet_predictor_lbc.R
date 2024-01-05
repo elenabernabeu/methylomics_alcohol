@@ -266,6 +266,7 @@ full_21_dan <- summary(lm(alcunitsupw ~ age + as.factor(sex) + ac_pred_dan, data
 round(100*(full_21_dan - null_21_dan), 3) # 7.544
 summary(lm(alcunitsupw ~ age + as.factor(sex) + ac_pred_dan, data=lbc_target_21)) # p-value: 2.952e-15
 
+
 # Incremental R2 (Log)?
 null_36 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex), data=lbc_target_36))$r.squared
 full_36 <- summary(lm(alcunitsupw_log ~ age + as.factor(sex) + ac_pred, data=lbc_target_36))$r.squared

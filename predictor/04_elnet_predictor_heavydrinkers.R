@@ -59,6 +59,25 @@ auc_21 <- auc(roc_21) # 0.8992
 ci_auc_36 <- ci.auc(roc_36) # 0.7353-0.8202
 ci_auc_21 <- ci.auc(roc_21) # 0.8458-0.9527
 
+# PR Curves - All
+fg_36 <- lbc_predictions_36[lbc_target_36$alcohol_cat_bi == 1, "ac_pred"]
+bg_36 <- lbc_predictions_36[lbc_target_36$alcohol_cat_bi == 0, "ac_pred"]
+fg_21 <- lbc_predictions_21[lbc_target_21$alcohol_cat_bi == 1, "ac_pred"]
+bg_21 <- lbc_predictions_21[lbc_target_21$alcohol_cat_bi == 0, "ac_pred"]
+
+# PR Curve - All
+pr_36 <- pr.curve(scores.class0 = fg_36, scores.class1 = bg_36, curve = T) # 0.4744251 
+pr_21 <- pr.curve(scores.class0 = fg_21, scores.class1 = bg_21, curve = T) # 0.4409454 
+pdf(file="/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall_lbc1936_R.pdf")
+plot(pr_36)
+dev.off()
+pdf(file="/Cluster_Filespace/Marioni_Group/Elena/alcohol_consumption/results/usualdrinkers_test/final_plots/prediction_lbc_heavydrinkers_auc_precisionrecall_lbc1921_R.pdf")
+plot(pr_21)
+dev.off()
+
+# PR Curve - All - Confidence interval
+
+
 # ROC curves - Sexagnos
 roc_36_sexagnos <- roc(response = lbc_target_36$alcohol_cat_bi, predictor = lbc_predictions_36_sex$ac_pred_sexagnos)
 roc_21_sexagnos <- roc(response = lbc_target_21$alcohol_cat_bi, predictor = lbc_predictions_21_sex$ac_pred_sexagnos)
